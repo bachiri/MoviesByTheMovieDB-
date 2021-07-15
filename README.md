@@ -18,7 +18,7 @@ When those pictures are updated ?
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/HomeScreenWithPosters.png" />
 
 
-Listing Screen that displays the top rated tv shows/movies
+Listing Screen that displays the top rated tv shows/movies and has the ability to sort by movie name or by date of publication 
 
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/MoviesScreen.png" />
 
@@ -56,6 +56,7 @@ The same can also be done for the [Error Screen](https://github.com/bachiri/Movi
 - [x] Display Movie Listing 
 - [x] Pagination    
 - [x] Pull to refresh
+- [x] Sorting by Alphabetical Order or Date
 
 
 ## List Libraries Used 
