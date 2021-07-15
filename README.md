@@ -18,7 +18,9 @@ When those pictures are updated ?
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/HomeScreenWithPosters.png" />
 
 
-Listing Screen that displays the top rated tv shows/movies and has the ability to sort by movie name or by date of publication 
+Listing Screen that displays the top rated tv shows/movies and has the ability to sort by movie name or by date of publication
+
+ * Sorting is also applied when fetching new results after the pagination [using this mehod](https://github.com/bachiri/MoviesByTheMovieDB-/blob/e00bf32421c472cd8dde56c4c414f88345e9f0d8/app/src/main/java/io/bachiri/abderrahman/moviesbymoviedb/movies/MoviesViewModel.kt#L64) .
 
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/MoviesScreen.png" />
 
