@@ -34,7 +34,8 @@ class FakeNetworkMovieService : MovieService {
                 "Young Royals",
                 "Prince Wilhelm adjusts to life at his prestigious new boarding school, Hillerska, but following his heart proves more challenging than anticipated.",
                 143,
-                9.4F
+                9.4F,
+                "2019-01-09"
             ),
             MovieDto(
                 2,
@@ -42,14 +43,16 @@ class FakeNetworkMovieService : MovieService {
                 "I Am Not an Animal",
                 "I Am Not An Animal is an animated comedy series about the only six talking animals in the world, whose cosseted existence in a vivisection unit is turned upside down when they are liberated by animal rights activists.",
                 653,
-                9.5F
+                9.5F,
+                "2019-01-09"
             ), MovieDto(
                 3,
                 "/xxv8Ibs8Anni6qrWkAf60rDsPCu.jpg",
                 "Run BTS!",
                 "Run BTS! is a South Korean show by the boy band BTS. The show is all about BTS doing activities, challenges and lots more.",
                 143,
-                9.4F
+                9.4F,
+                "2019-01-09"
             ),
             MovieDto(
                 4,
@@ -57,7 +60,8 @@ class FakeNetworkMovieService : MovieService {
                 "The Rising of the Shield Hero",
                 "Prince Wilhelm adjusts to life at his prestigious new boarding school, Hillerska, but following his heart proves more challenging than anticipated.",
                 553,
-                9.1F
+                9.1F,
+                "2019-01-09"
             )
         ), 1,
         4

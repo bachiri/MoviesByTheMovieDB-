@@ -55,7 +55,20 @@ class MoviesFragment : Fragment() {
         manageViewModel(adapter)
         managePagination()
         manageRefreshLayout()
+        manageSorting()
 
+    }
+
+    private fun manageSorting() {
+        fragmentMovieBinding.sortingAlphabetical.setOnClickListener {
+            moviesViewModel.setSortingType(MoviesViewModel.Sorting.ALPHABETICAl)
+        }
+        fragmentMovieBinding.sortingNormal.setOnClickListener {
+            moviesViewModel.setSortingType(MoviesViewModel.Sorting.NORMAL)
+        }
+        fragmentMovieBinding.sortingChronogical.setOnClickListener {
+            moviesViewModel.setSortingType(MoviesViewModel.Sorting.CHRONOLOGICAL)
+        }
     }
 
     private fun manageViewModel(adapter: MoviesAdapter) {

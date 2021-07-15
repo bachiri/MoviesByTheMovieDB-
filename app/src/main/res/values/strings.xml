@@ -3,4 +3,7 @@
     <string name="movie_error_retry">Retry</string>
     <string name="movies_empty_data_label">We are preparing the list of top trending movies</string>
     <string name="movies_error_label">Unexpected Error Happened Please Try Again</string>
+    <string name="no_sorting">No Sorting</string>
+    <string name="alphabetical_sorting">Sort: A-Z</string>
+    <string name="chronological_sorting"><![CDATA[Sort :2021 >>]]></string>
 </resources>

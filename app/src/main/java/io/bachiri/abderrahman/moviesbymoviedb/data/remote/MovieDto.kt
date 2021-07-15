@@ -15,5 +15,6 @@ class MovieDto(
     @SerializedName("name") val movieName: String,
     @SerializedName("overview") val overview: String,
     @SerializedName("vote_count") val voteCount: Int,
-    @SerializedName("vote_average") val voteAverage: Float
+    @SerializedName("vote_average") val voteAverage: Float,
+    @SerializedName("first_air_date") val firstAirDate: String
 )

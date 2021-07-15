@@ -24,6 +24,7 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
     val moviesFirstPictures = _moviesFirstPictures
     private val localMovies: MutableList<Movie> = mutableListOf()
     private var page: Int = 1
+    private var currentSortingType: Sorting = Sorting.NORMAL
 
     init {
         getTopRatedTvShows()
@@ -38,6 +39,41 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
     fun loadMore() {
         page++
         getTopRatedTvShows()
+    }
+
+    fun setSortingType(sortingType: Sorting) {
+        if (sortingType != currentSortingType) {
+            currentSortingType = sortingType
+            emitSortedData()
+        }
+
+    }
+
+    private fun emitSortedData() {
+        viewModelScope.launch {
+            _movies.emit(
+                ViewState(
+                    loading = false,
+                    data = getSortedList(localMovies.toList()),
+                    showEmptyData = localMovies.isEmpty()
+                )
+            )
+        }
+    }
+
+    private fun getSortedList(toList: List<Movie>): List<Movie> {
+        var listToReturn = toList
+        when (currentSortingType) {
+            Sorting.NORMAL -> {
+            }
+            Sorting.ALPHABETICAl -> {
+                listToReturn = listToReturn.sortedBy { it.movieName }
+            }
+            Sorting.CHRONOLOGICAL -> {
+                listToReturn = listToReturn.sortedByDescending { it.firstAirDate }
+            }
+        }
+        return listToReturn
     }
 
     private fun getTopRatedTvShows() {
@@ -57,7 +93,7 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
                             }
                             ViewState(
                                 loading = false,
-                                data = localMovies.toList(),
+                                data = getSortedList(localMovies.toList()),
                                 showEmptyData = result.data.isEmpty()
                             )
 
@@ -90,7 +126,9 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
         _moviesFirstPictures.emit(ViewState(data = firstFivePicture))
     }
 
-
+    enum class Sorting {
+        NORMAL, ALPHABETICAl, CHRONOLOGICAL
+    }
 }
 
 
