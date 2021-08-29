@@ -72,7 +72,6 @@ class HomeFragment : Fragment() {
                         .into(currentImageView as ImageView)
                 }
             }
-
         }
     }
 

@@ -227,6 +227,4 @@ class MoviesFragment : Fragment() {
                 intent
             )
         }
-
-
 }

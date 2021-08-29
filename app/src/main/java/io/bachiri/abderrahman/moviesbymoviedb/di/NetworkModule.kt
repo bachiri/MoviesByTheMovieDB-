@@ -65,7 +65,6 @@ class NetworkModule {
             .addInterceptor(httpLoggingInterceptor)
             .addInterceptor(AuthenticationInterceptor(API_KEY, DEFAULT_LANGUAGE))
             .build()
-
     }
 
 

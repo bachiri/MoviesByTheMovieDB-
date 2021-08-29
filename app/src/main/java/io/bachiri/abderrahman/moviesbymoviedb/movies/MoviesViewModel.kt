@@ -36,7 +36,7 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
     val effects = _effects.receiveAsFlow()
 
     private val localMovies: MutableList<Movie> = mutableListOf()
-    private var page: Int = 1
+    private var page: Int = 2
     private var currentSortingType: Sorting = Sorting.NORMAL
 
     init {

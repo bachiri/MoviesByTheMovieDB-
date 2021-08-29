@@ -11,7 +11,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import java.security.MessageDigest
 
 /**
- * Inspiration from https://mobikul.com/glide-image-transformations/
+ * Inspired from https://mobikul.com/glide-image-transformations/
  */
 
 class GlideBlurTransformation(context: Context) : BitmapTransformation() {
