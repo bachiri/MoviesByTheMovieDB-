@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import io.bachiri.abderrahman.moviesbymoviedb.movies.home.HomeFragment
 import io.bachiri.abderrahman.moviesbymoviedb.movies.listing.MoviesFragment
+import io.bachiri.abderrahman.moviesbymoviedb.movies.movie.MovieFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -24,6 +25,13 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, MoviesFragment())
             .addToBackStack(MoviesFragment.getFragmentTag())
+            .commitAllowingStateLoss()
+    }
+
+    fun navigateMovieView() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, MovieFragment())
+            .addToBackStack(MovieFragment.getFragmentTag())
             .commitAllowingStateLoss()
     }
 }

@@ -2,26 +2,29 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="200dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:id="@+id/movie_container"
-    android:layout_height="wrap_content"
     android:background="#1a1b1a">
 
-
     <ImageView
-        android:id="@+id/moviePoster"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:id="@+id/movieBlurredBackGround"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="fitXY"
-        android:src="@drawable/movie_placeholder"
+        android:src="@drawable/ic_dummy_movie_poster_blured"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <ImageView
+        android:id="@+id/moviePoster"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:background="@drawable/bottom_gradient"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_big"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_dummy_movie_poster"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,9 +33,8 @@
         android:id="@+id/movieRatingIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/space_small"
         android:src="@drawable/ic_star"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/moviePoster"
         app:layout_constraintTop_toBottomOf="@id/moviePoster" />
 
     <TextView
@@ -43,6 +45,7 @@
         app:layout_constraintBottom_toBottomOf="@id/movieRatingIcon"
         app:layout_constraintStart_toEndOf="@+id/movieRatingIcon"
         app:layout_constraintTop_toTopOf="@+id/movieRatingIcon"
+        android:textStyle="bold"
         tools:text="7.8" />
 
     <ImageView
@@ -52,7 +55,7 @@
         android:layout_marginStart="30dp"
         android:src="@drawable/ic_person"
         app:layout_constraintBottom_toBottomOf="@id/movieRatingIcon"
-        app:layout_constraintStart_toEndOf="@+id/movieRatingLabel"
+        app:layout_constraintEnd_toStartOf="@id/movieRatingCountLabel"
         app:layout_constraintTop_toTopOf="@+id/movieRatingIcon" />
 
     <TextView
@@ -60,8 +63,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/movieRatingCountIcon"
-        app:layout_constraintStart_toEndOf="@+id/movieRatingCountIcon"
+        app:layout_constraintEnd_toEndOf="@id/moviePoster"
         app:layout_constraintTop_toTopOf="@+id/movieRatingCountIcon"
         tools:text="5 000 000 " />
 
@@ -71,8 +75,28 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/space_small"
         android:textColor="@color/white"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:background="@drawable/round_grey_dark"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/movieRatingLabel"
+        app:layout_constraintBottom_toTopOf="@id/movieDescription"
         tools:text="The Rising " />
+
+    <TextView
+        android:id="@+id/movieDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_normal"
+        android:background="@drawable/round_grey"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/movieTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:maxLines="10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="The Colgate Comedy Hour is an American comedy-musical variety series that aired live on the NBC network from 1950 to 1955. The show starred many notable comedians and entertainers of the era, including Eddie Cantor, Dean Martin and Jerry Lewis, Fred Allen, Donald O'Connor, Bud Abbott and Lou Costello, Bob Hope, Jimmy Durante, Ray Bolger, Gordon MacRae, Ben Blue, Robert Paige, Tony Curtis, Burt Lancaster, Broadway dancer Wayne Lamb and Spike Jones and His City Slickers." />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
