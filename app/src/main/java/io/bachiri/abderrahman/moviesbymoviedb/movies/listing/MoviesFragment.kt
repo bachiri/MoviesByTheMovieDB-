@@ -4,26 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import io.bachiri.abderrahman.moviesbymoviedb.MainActivity
 import io.bachiri.abderrahman.moviesbymoviedb.R
 import io.bachiri.abderrahman.moviesbymoviedb.data.Movie
 import io.bachiri.abderrahman.moviesbymoviedb.databinding.FragmentMoviesBinding
 import io.bachiri.abderrahman.moviesbymoviedb.movies.MoviesViewModel
-import io.bachiri.abderrahman.moviesbymoviedb.movies.ViewState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MoviesFragment : Fragment() {
     companion object {
-        const val NUMBER_OF_ITEMS_TO_TRIGGER_PAGINATION = 2;
+        const val NUMBER_OF_ITEMS_TO_TRIGGER_PAGINATION = 10
 
         fun getFragmentTag(): String {
             return "MoviesFragment"
@@ -35,7 +38,12 @@ class MoviesFragment : Fragment() {
 
     private var errorSnackBar: Snackbar? = null
     private var loading = true
-    private var lastVisibleScrollViewItem = 0
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        manageMoviesEffects()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,8 +57,10 @@ class MoviesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = MoviesAdapter()
 
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+        val adapter = buildAdapter()
         initRecyclerview(adapter)
         manageViewModel(adapter)
         managePagination()
@@ -59,16 +69,51 @@ class MoviesFragment : Fragment() {
 
     }
 
+    private fun manageMoviesEffects() {
+        lifecycleScope.launchWhenStarted {
+            moviesViewModel.effects.collect {
+                when (it) {
+                    is MoviesViewModel.MoviesViewEffect.MoviesOpenMovieView -> {
+                        (this@MoviesFragment.requireActivity() as MainActivity).navigateMovieView()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun buildAdapter(): MoviesAdapter {
+        val moviesAdapter = MoviesAdapter {
+            lifecycleScope.launchWhenStarted {
+                moviesViewModel.intents.send(
+                    MoviesViewModel.MoviesIntent.MoviesOnMovieClicked(it)
+                )
+            }
+        }
+        (moviesAdapter as RecyclerView.Adapter<*>).apply {
+            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
+
+        return moviesAdapter
+    }
+
     private fun manageSorting() {
+
         fragmentMovieBinding.sortingAlphabetical.setOnClickListener {
-            moviesViewModel.setSortingType(MoviesViewModel.Sorting.ALPHABETICAl)
+            sortBy(MoviesViewModel.Sorting.ALPHABETICAl)
+
         }
         fragmentMovieBinding.sortingNormal.setOnClickListener {
-            moviesViewModel.setSortingType(MoviesViewModel.Sorting.NORMAL)
+            sortBy(MoviesViewModel.Sorting.NORMAL)
         }
+
         fragmentMovieBinding.sortingChronogical.setOnClickListener {
-            moviesViewModel.setSortingType(MoviesViewModel.Sorting.CHRONOLOGICAL)
+            sortBy(MoviesViewModel.Sorting.CHRONOLOGICAL)
         }
+    }
+
+    private fun sortBy(sortingType: MoviesViewModel.Sorting): Job {
+        val intent = MoviesViewModel.MoviesIntent.MoviesSortingIntent(sortingType)
+        return sendMovieIntent(intent)
     }
 
     private fun manageViewModel(adapter: MoviesAdapter) {
@@ -92,7 +137,7 @@ class MoviesFragment : Fragment() {
 
     private fun manageRefreshLayout() {
         fragmentMovieBinding.refresherLayout.setOnRefreshListener {
-            moviesViewModel.refreshData()
+            sendMovieIntent(MoviesViewModel.MoviesIntent.MoviesRefresh)
         }
     }
 
@@ -103,25 +148,17 @@ class MoviesFragment : Fragment() {
 
                 if (dy > 0) {
                     recyclerView.layoutManager?.let {
-
                         //pastvisible itmes
                         val pastVisibleItems =
                             (it as LinearLayoutManager).findFirstVisibleItemPosition()
                         //items
                         val totalItemCount = it.itemCount
-
                         //first visible item
                         val visibleItemCount = it.childCount
                         if (loading) {
                             if (pastVisibleItems + visibleItemCount > totalItemCount - NUMBER_OF_ITEMS_TO_TRIGGER_PAGINATION) {
-                                lastVisibleScrollViewItem = pastVisibleItems
                                 loading = false
-                                moviesViewModel.loadMore()
-                                Toast.makeText(
-                                    requireContext(),
-                                    "result is loading",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                sendMovieIntent(MoviesViewModel.MoviesIntent.MoviesLoadMore)
                             }
                         }
                     }
@@ -130,15 +167,18 @@ class MoviesFragment : Fragment() {
         })
     }
 
-    private fun manageListingState(viewState: ViewState<List<Movie>>, adapter: MoviesAdapter) {
-        adapter.submitList(viewState.data)
-        if (viewState.data?.size ?: -1 > 0) {
-            fragmentMovieBinding.moviesRecyclerView.scrollToPosition(lastVisibleScrollViewItem) //Start the scroll
+    private fun manageListingState(
+        viewState: MoviesViewModel.MoviesViewState<Movie>,
+        adapter: MoviesAdapter
+    ) {
+        if (viewState.sortingApplied) {
+            adapter.replaceMovies(viewState.data)
+        } else {
+            adapter.addMovies(viewState.data)
         }
-
     }
 
-    private fun manageEmptyDataState(it: ViewState<List<Movie>>) {
+    private fun manageEmptyDataState(it: MoviesViewModel.MoviesViewState<Movie>) {
         fragmentMovieBinding.emptyDataView.visibility =
             if (it.showEmptyData) View.VISIBLE else View.GONE
         fragmentMovieBinding.emptyDataIcon.setImageDrawable(
@@ -151,13 +191,13 @@ class MoviesFragment : Fragment() {
 
     }
 
-    private fun manageLoadingState(it: ViewState<List<Movie>>) {
+    private fun manageLoadingState(it: MoviesViewModel.MoviesViewState<Movie>) {
         fragmentMovieBinding.progressBar.visibility = if (it.loading) View.VISIBLE else View.GONE
         loading = it.resultLoaded
         fragmentMovieBinding.refresherLayout.isRefreshing = !it.resultLoaded
     }
 
-    private fun manageErrorState(it: ViewState<List<Movie>>) {
+    private fun manageErrorState(it: MoviesViewModel.MoviesViewState<Movie>) {
         fragmentMovieBinding.errorView.visibility =
             if (it.errorMessage.isNotEmpty()) View.VISIBLE else View.GONE
         fragmentMovieBinding.errorIcon.setImageDrawable(
@@ -174,10 +214,19 @@ class MoviesFragment : Fragment() {
                 fragmentMovieBinding.root,
                 it.errorMessage, Snackbar.LENGTH_INDEFINITE
             )
-                .setAction(R.string.movie_error_retry) { moviesViewModel.refreshData() }
+                .setAction(R.string.movie_error_retry) {
+                    sendMovieIntent(MoviesViewModel.MoviesIntent.MoviesRefresh)
+                }
                 .also { it.show() }
         }
     }
+
+    private fun sendMovieIntent(intent: MoviesViewModel.MoviesIntent) =
+        lifecycleScope.launchWhenStarted {
+            moviesViewModel.intents.send(
+                intent
+            )
+        }
 
 
 }

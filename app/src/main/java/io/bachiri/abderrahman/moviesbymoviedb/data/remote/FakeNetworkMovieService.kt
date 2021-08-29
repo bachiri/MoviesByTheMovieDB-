@@ -14,16 +14,16 @@ class FakeNetworkMovieService : MovieService {
 
 
         //To trigger an exception follow the instruction in the TODO comment
-        val exceptionResponse = getExceptionResponse()
-        exceptionResponse.invoke()//TODO uncomment this line to get an exception
+//        val exceptionResponse = getExceptionResponse()
+//        exceptionResponse.invoke()//TODO uncomment this line to get an exception
 
 
-        val movieDtoResponse: MovieDtoResponse = getNonEmptyResponse()
-        return movieDtoResponse //TODO uncomment this line to get a list of results that is not empty
+//        val movieDtoResponse: MovieDtoResponse = getNonEmptyResponse()
+//        return movieDtoResponse //TODO uncomment this line to get a list of results that is not empty
 
 
-        //val emptyDtoResponse: MovieDtoResponse = getEmptyResponse()
-        //return emptyDtoResponse
+        val emptyDtoResponse: MovieDtoResponse = getEmptyResponse()
+        return emptyDtoResponse
     }
 
     private fun getNonEmptyResponse() = MovieDtoResponse(

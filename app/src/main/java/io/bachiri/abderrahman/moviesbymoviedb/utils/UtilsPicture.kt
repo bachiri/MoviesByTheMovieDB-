@@ -1,4 +1,4 @@
-package io.bachiri.abderrahman.moviesbymoviedb
+package io.bachiri.abderrahman.moviesbymoviedb.utils
 
 object UtilsPicture {
 

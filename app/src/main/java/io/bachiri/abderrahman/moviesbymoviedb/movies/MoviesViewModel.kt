@@ -3,12 +3,15 @@ package io.bachiri.abderrahman.moviesbymoviedb.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.bachiri.abderrahman.moviesbymoviedb.UtilsPicture
 import io.bachiri.abderrahman.moviesbymoviedb.data.Movie
 import io.bachiri.abderrahman.moviesbymoviedb.repository.MovieRepository
 import io.bachiri.abderrahman.moviesbymoviedb.repository.Resource
+import io.bachiri.abderrahman.moviesbymoviedb.utils.UtilsPicture
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,32 +19,79 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRepository) :
     ViewModel() {
 
-    private val _movies: MutableStateFlow<ViewState<List<Movie>>> = MutableStateFlow(ViewState())
+    private val _movies: MutableStateFlow<MoviesViewState<Movie>> =
+        MutableStateFlow(MoviesViewState())
     val movies = _movies
 
-    private val _moviesFirstPictures: MutableStateFlow<ViewState<List<String>>> =
-        MutableStateFlow(ViewState())
+    private val _currentMovie: MutableStateFlow<MovieViewState> = MutableStateFlow(MovieViewState())
+    val currentMovie = _currentMovie
+
+    private val _moviesFirstPictures: MutableStateFlow<MoviesViewState<String>> =
+        MutableStateFlow(MoviesViewState())
     val moviesFirstPictures = _moviesFirstPictures
+
+    val intents: Channel<MoviesIntent> = Channel(Channel.UNLIMITED)
+
+    private val _effects: Channel<MoviesViewEffect> = Channel()
+    val effects = _effects.receiveAsFlow()
+
     private val localMovies: MutableList<Movie> = mutableListOf()
     private var page: Int = 1
     private var currentSortingType: Sorting = Sorting.NORMAL
 
     init {
+        handleIntents()
         getTopRatedTvShows()
     }
 
-    fun refreshData() {
+    private fun handleIntents() {
+
+        viewModelScope.launch {
+            intents.consumeAsFlow().collect { moviesIntent ->
+                when (moviesIntent) {
+                    MoviesIntent.MoviesLoadMore -> {
+                        loadMore()
+                    }
+                    MoviesIntent.MoviesRefresh -> {
+                        refreshData()
+                    }
+                    is MoviesIntent.MoviesSortingIntent -> {
+                        setSortingType(moviesIntent.sortingType)
+                    }
+
+                    is MoviesIntent.MoviesOnMovieClicked -> {
+                        setCurrentSelectedMovie(moviesIntent.id)
+                        setEffect(MoviesViewEffect.MoviesOpenMovieView)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setEffect(moviesOpenMovieView: MoviesViewEffect) {
+        viewModelScope.launch {
+            _effects.send(moviesOpenMovieView)
+        }
+    }
+
+    private fun setCurrentSelectedMovie(id: Int) {
+        viewModelScope.launch {
+            _currentMovie.emit(MovieViewState(data = localMovies.firstOrNull { it.id == id }))
+        }
+    }
+
+    private fun refreshData() {
         page = 1
         localMovies.clear()
         getTopRatedTvShows()
     }
 
-    fun loadMore() {
+    private fun loadMore() {
         page++
         getTopRatedTvShows()
     }
 
-    fun setSortingType(sortingType: Sorting) {
+    private fun setSortingType(sortingType: Sorting) {
         if (sortingType != currentSortingType) {
             currentSortingType = sortingType
             emitSortedData()
@@ -52,8 +102,9 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
     private fun emitSortedData() {
         viewModelScope.launch {
             _movies.emit(
-                ViewState(
+                MoviesViewState(
                     loading = false,
+                    sortingApplied = true,
                     data = getSortedList(localMovies.toList()),
                     showEmptyData = localMovies.isEmpty()
                 )
@@ -76,11 +127,16 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
         return listToReturn
     }
 
+
+
     private fun getTopRatedTvShows() {
 
         viewModelScope.launch {
-            _movies.emit(ViewState(loading = true))
-
+            _movies.emit(
+                MoviesViewState(
+                    loading = true
+                )
+            )
             moviesRepository
                 .getTopRatedTvShows(page)
                 .collect { result ->
@@ -91,15 +147,19 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
                             if (!result.data.isNullOrEmpty()) {
                                 managePicturesPostersForCTA(result)
                             }
-                            ViewState(
+                            MoviesViewState(
                                 loading = false,
                                 data = getSortedList(localMovies.toList()),
-                                showEmptyData = result.data.isEmpty()
+                                showEmptyData = result.data.isEmpty(),
+
                             )
 
                         }
-                        is Resource.Loading -> ViewState(loading = true)
-                        is Resource.Error -> ViewState(
+                        is Resource.Loading -> MoviesViewState(
+                            loading = true,
+
+                        )
+                        is Resource.Error -> MoviesViewState(
                             loading = false,
                             errorMessage = result.message
                         )
@@ -123,11 +183,38 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MovieRep
                 )
             }
         }
-        _moviesFirstPictures.emit(ViewState(data = firstFivePicture))
+        _moviesFirstPictures.emit(MoviesViewState(data = firstFivePicture))
     }
 
     enum class Sorting {
         NORMAL, ALPHABETICAl, CHRONOLOGICAL
+    }
+
+    sealed class MoviesIntent {
+        class MoviesSortingIntent(val sortingType: Sorting) : MoviesIntent()
+        class MoviesOnMovieClicked(val id: Int) : MoviesIntent()
+        object MoviesRefresh : MoviesIntent()
+        object MoviesLoadMore : MoviesIntent()
+
+    }
+
+     data class MoviesViewState<T>(
+        val loading: Boolean = false,
+        val sortingApplied: Boolean = false,
+        val showEmptyData: Boolean = false,
+        var resultLoaded: Boolean = true,
+        val data: List<T> = listOf(),
+        val errorMessage: String = ""
+    ) : ViewState<List<T>>()
+
+
+    data class MovieViewState(
+        val data: Movie? = null,
+    ) : ViewState<Movie>()
+
+
+    sealed class MoviesViewEffect {
+        object MoviesOpenMovieView : MoviesViewEffect()
     }
 }
 
