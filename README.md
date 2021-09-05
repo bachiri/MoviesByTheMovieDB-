@@ -1,5 +1,39 @@
 # MoviesByTheMovieDB
 
+<p align="center">  
+
+</p>
+</br>
+
+
+<p align="center">
+<img src="/assets/movieThumb.png"/>
+</p>
+
+<img src="/assets/MovieByMoviesdB.gif" align="right" width="32%"/>
+
+## List of libraries / Android APIs used 
+
+- Hilt 
+- Retrofit
+- Glide
+- Jetpack ViewModel
+- Kotlin Coroutine 
+- Kotlin Flow 
+- Live Data 
+- Swip Refresh Layout
+
+
+## List of Features
+
+- [x] Display Top Rating CTA with a preview of posters
+- [x] Display Movie Listing 
+- [x] Display Movie with Blurred Background 
+- [x] Pagination    
+- [x] Pull to refresh
+- [x] Sorting by Alphabetical Order or Date
+
+
 ## Screens(With Some technical description) 
 
 First when the app is opened a top rating CTA is displayed that contains 5 pictures the fragment is associated with a viewModel that loads data and it's the same view model shared with the listing view and depending on the movies posters the pictures are [selected randomly](https://github.com/bachiri/MoviesByTheMovieDB-/blob/0a2146852807c96b7390adb7fd883f116043476e/app/src/main/java/io/bachiri/abderrahman/moviesbymoviedb/movies/MoviesViewModel.kt#L78)
@@ -12,7 +46,7 @@ When those pictures are updated ?
   
   * During a refresh
 
-<img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/HomeScreenEmptyPosters.png" />
+<img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/HomeScreenEmptyPosters.png" align="right" width="32%"/>
 
 
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/HomeScreenWithPosters.png" />
@@ -23,6 +57,10 @@ Listing Screen that displays the top rated tv shows/movies and has the ability t
  * Sorting is also applied when fetching new results after the pagination [using this mehod](https://github.com/bachiri/MoviesByTheMovieDB-/blob/e00bf32421c472cd8dde56c4c414f88345e9f0d8/app/src/main/java/io/bachiri/abderrahman/moviesbymoviedb/movies/MoviesViewModel.kt#L64) .
 
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/MoviesScreen.png" />
+
+Movie Screen that displays the current selected movie with a blurred background
+
+<img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/MovieScreen.png" />
 
 How to see an empty Trending movies 
   * There is a class [FakeNetworkMovieService](https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/app/src/main/java/io/bachiri/abderrahman/moviesbymoviedb/data/remote/FakeNetworkMovieService.kt) that can be used by returning an empty list
@@ -40,34 +78,5 @@ The same can also be done for the [Error Screen](https://github.com/bachiri/Movi
 <img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/ErrorScreen.png" />
 
 
-
-
-
-
-
 ## GIF(See Video For Better Quality)
  [Video Link For better quality (Can be opened using Chrome)](https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/MovieByMoviesdB.webm)
-
-<img width="280" src="https://github.com/bachiri/MoviesByTheMovieDB-/blob/main/assets/MovieByMoviesdB.gif" />
-
-
-
-## List of Features
-
-- [x] Display Top Rating CTA with a preview of posters
-- [x] Display Movie Listing 
-- [x] Pagination    
-- [x] Pull to refresh
-- [x] Sorting by Alphabetical Order or Date
-
-
-## List Libraries Used 
-
-- Hilt 
-- Retrofit
-- Glide
-- Jetpack ViewModel
-- Kotlin Coroutine 
-- Kotlin Flow 
-- Live Data 
-- Swip Refresh Layout
