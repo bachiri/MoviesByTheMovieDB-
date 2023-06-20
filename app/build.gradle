@@ -47,7 +47,7 @@ dependencies {
     //implementation 'androidx.corecyclerview:recyclerviewnstraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //RecyclerView
     implementation "androidx.recyclerview:recyclerview:1.2.1"
