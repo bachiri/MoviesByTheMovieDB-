@@ -79,7 +79,7 @@ dependencies {
     kapt "androidx.hilt:hilt-compiler:$hiltLifecycleViewModelVersion"
 
     //Android X
-    implementation "androidx.fragment:fragment-ktx:1.3.4"
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
 
     //Refresh Layout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
