@@ -75,7 +75,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
 
-    def hiltLifecycleViewModelVersion = "1.0.0"
+    def hiltLifecycleViewModelVersion = "1.4.0"
     kapt "androidx.hilt:hilt-compiler:$hiltLifecycleViewModelVersion"
 
     //Android X
